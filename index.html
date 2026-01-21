@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>AI Ügynök Demo – Builder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+    margin:0;
+    background:#0a0a0a;
+    color:#fff;
+    font-family:Arial, sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+.chatbox{
+    width:380px;
+    background:#111;
+    border-radius:20px;
+    display:flex;
+    flex-direction:column;
+    border:1px solid #222;
+}
+.header{
+    padding:15px;
+    text-align:center;
+    border-bottom:1px solid #222;
+    color:#00ffcc;
+    font-weight:bold;
+}
+.messages{
+    flex:1;
+    padding:15px;
+    overflow-y:auto;
+}
+.msg{
+    margin-bottom:12px;
+    line-height:1.4;
+}
+.user{ color:#00ffcc; }
+.ai{ color:#ddd; }
+
+.input{
+    display:flex;
+    border-top:1px solid #222;
+}
+input{
+    flex:1;
+    padding:12px;
+    background:#0d0d0d;
+    border:none;
+    color:#fff;
+}
+button{
+    background:#00ffcc;
+    border:none;
+    padding:12px 18px;
+    cursor:pointer;
+    font-weight:bold;
+}
+small{
+    opacity:.5;
+    display:block;
+    text-align:center;
+    padding:6px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="chatbox">
+    <div class="header">🤖 SmartTable AI – DEMO</div>
+    <div class="messages" id="chat">
+        <div class="msg ai">Szia! Segíthetek asztalt foglalni 😊</div>
+    </div>
+    <div class="input">
+        <input id="userInput" placeholder="Írj ide..." />
+        <button onclick="send()">➤</button>
+    </div>
+    <small>AI Agent Builder Demo</small>
+</div>
+
+<script>
+let booking = {};
+
+function send(){
+    const input = document.getElementById("userInput");
+    const chat = document.getElementById("chat");
+    const text = input.value.trim();
+    if(!text) return;
+
+    chat.innerHTML += `<div class="msg user">👤 ${text}</div>`;
+    input.value = "";
+
+    setTimeout(()=>aiReply(text),500);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function aiReply(text){
+    let reply = "Értem 😊";
+
+    if(text.match(/\d+\s*fő/)){
+        booking.people = text.match(/\d+/)[0];
+        reply = `Rendben, ${booking.people} főre. Milyen időpontra?`;
+    }
+    else if(text.match(/\d{1,2}:\d{2}/)){
+        booking.time = text.match(/\d{1,2}:\d{2}/)[0];
+        reply = `Szuper! ${booking.people || "?"} fő, ${booking.time}. Meg tudod adni a neved?`;
+    }
+    else if(text.length > 2 && !booking.name){
+        booking.name = text;
+        reply = `✅ Foglalás kész!\nNév: ${booking.name}\nFő: ${booking.people}\nIdő: ${booking.time}`;
+    }
+
+    document.getElementById("chat").innerHTML +=
+        `<div class="msg ai">🤖 ${reply}</div>`;
+}
+</script>
+
+</body>
+</html>
